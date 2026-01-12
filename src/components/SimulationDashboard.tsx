@@ -21,7 +21,7 @@ export function SimulationDashboard({ people }: Props) {
     // Reset reactions when the cohort changes to prevent ID mismatches
     useEffect(() => {
         setReactions([]);
-        setTopic('');
+        // setTopic(''); // We keep the topic so user can easily re-run
     }, [people]);
 
     const handleSimulate = (e: React.FormEvent) => {
