@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Person, Reaction } from '@/lib/types';
 import { simulateReaction } from '@/lib/simulator'; // Logic is pure, safe to use here? 
 // Wait, simulator.ts is pure logic, so yes. Next.js can import strict TS files in components if they don't use node-only APIs.
@@ -17,6 +17,12 @@ export function SimulationDashboard({ people }: Props) {
     const [topic, setTopic] = useState('');
     const [reactions, setReactions] = useState<Reaction[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
+
+    // Reset reactions when the cohort changes to prevent ID mismatches
+    useEffect(() => {
+        setReactions([]);
+        setTopic('');
+    }, [people]);
 
     const handleSimulate = (e: React.FormEvent) => {
         e.preventDefault();
