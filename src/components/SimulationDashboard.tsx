@@ -11,9 +11,10 @@ import { PersonCard } from './PersonCard';
 
 interface Props {
     people: Person[];
+    onChat: (person: Person) => void;
 }
 
-export function SimulationDashboard({ people }: Props) {
+export function SimulationDashboard({ people, onChat }: Props) {
     const [topic, setTopic] = useState('');
     const [reactions, setReactions] = useState<Reaction[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
@@ -101,7 +102,7 @@ export function SimulationDashboard({ people }: Props) {
 
                             return (
                                 <div key={r.personId} className="relative group">
-                                    <PersonCard person={person} />
+                                    <PersonCard person={person} onChat={onChat} />
                                     {/* Reaction Overlay */}
                                     <div className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-xl p-4 flex flex-col items-center justify-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-slate-200">
                                         <div className="mb-2 p-2 rounded-full bg-slate-50">

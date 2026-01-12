@@ -6,11 +6,13 @@ import { generateCohort } from '@/lib/generator';
 import { GeneratorForm } from '@/components/GeneratorForm';
 import { SimulationDashboard } from '@/components/SimulationDashboard';
 import { PersonCard } from '@/components/PersonCard';
+import { ChatModal } from '@/components/ChatModal';
 import { Sparkles, Users, Info } from 'lucide-react';
 
 export default function Home() {
   const [people, setPeople] = useState<Person[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [chatPerson, setChatPerson] = useState<Person | null>(null);
 
   // Initial generation on empty state? Maybe not, let user choose.
 
@@ -83,14 +85,14 @@ export default function Home() {
 
             {/* Main Content */}
             <div className="lg:col-span-3 space-y-8">
-              <SimulationDashboard people={people} />
+              <SimulationDashboard people={people} onChat={setChatPerson} />
 
               {/* Meet the Cohort */}
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-4">Meet the Cohort</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {people.map((person) => (
-                    <PersonCard key={person.id} person={person} />
+                    <PersonCard key={person.id} person={person} onChat={setChatPerson} />
                   ))}
                 </div>
               </div>
@@ -98,6 +100,14 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {chatPerson && (
+        <ChatModal
+          person={chatPerson}
+          isOpen={!!chatPerson}
+          onClose={() => setChatPerson(null)}
+        />
+      )}
     </main>
   );
 }

@@ -16,7 +16,7 @@ function TraitBar({ label, value, color }: { label: string; value: number; color
     );
 }
 
-export function PersonCard({ person }: { person: Person }) {
+export function PersonCard({ person, onChat }: { person: Person; onChat?: (p: Person) => void }) {
     // Color coding for politics
     const polColor = {
         'Far Left': 'bg-blue-600 text-white',
@@ -30,7 +30,19 @@ export function PersonCard({ person }: { person: Person }) {
     }[person.politics] || 'bg-gray-400 text-white';
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col gap-4 hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col gap-4 hover:shadow-md transition-shadow group/card relative">
+
+            {/* Chat Action Overlay (Only if onChat is provided) */}
+            {onChat && (
+                <button
+                    onClick={() => onChat(person)}
+                    className="absolute top-4 right-4 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full shadow-lg opacity-0 group-hover/card:opacity-100 transition-all z-20 transform translate-y-2 group-hover/card:translate-y-0"
+                    title="Chat with this persona"
+                >
+                    <User className="w-4 h-4" />
+                </button>
+            )}
+
             <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-slate-100 overflow-hidden flex-shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -100,6 +100,7 @@ export function generatePerson(): Person {
             { item: 'Middle', weight: 50 },
             { item: 'High', weight: 20 },
         ]),
+        occupation: getRandom(['Teacher', 'Engineer', 'Nurse', 'Manager', 'Salesperson', 'Artist', 'Driver', 'Student', 'Retired', 'Lawyer', 'Accountant', 'Developer', 'Designer', 'Chef', 'Mechanic']),
     };
 
     const personality = generatePersonality();
