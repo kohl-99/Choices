@@ -85,12 +85,15 @@ export default function Home() {
             <div className="lg:col-span-3 space-y-8">
               <SimulationDashboard people={people} />
 
-              {/* People Grid (If not showing simulation results yet, or always show?) */}
-              {/* The Dashboard handles showing results. We should show the people list if no results yet? 
-                        Actually, SimulationDashboard is self-contained. 
-                        Let's add a "Meet the Cohort" section below if needed. 
-                        Or just rely on the dashboard which shows cards.
-                    */}
+              {/* Meet the Cohort */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Meet the Cohort</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {people.map((person) => (
+                    <PersonCard key={person.id} person={person} />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
