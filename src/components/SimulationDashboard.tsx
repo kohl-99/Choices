@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Person, Reaction } from '@/lib/types';
 import { simulateReaction } from '@/lib/simulator'; // Logic is pure, safe to use here? 
+import { calculateBreakdown, BreakdownResult } from '@/lib/analytics';
 // Wait, simulator.ts is pure logic, so yes. Next.js can import strict TS files in components if they don't use node-only APIs.
 
 import { MessageSquare, ThumbsUp, ThumbsDown, Minus, Activity } from 'lucide-react';
@@ -86,6 +87,10 @@ export function SimulationDashboard({ people, onChat }: Props) {
             {/* Results Section */}
             {reactions.length > 0 && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                    {/* Segment Analysis (New) */}
+                    <SegmentAnalysis reactions={reactions} people={people} />
+
                     {/* Stats Bar */}
                     <div className="flex gap-4">
                         <StatCard label="Positive" count={stats.positive} total={people.length} color="bg-emerald-50 text-emerald-700 border-emerald-100" />
@@ -132,6 +137,59 @@ function StatCard({ label, count, total, color }: { label: string; count: number
         <div className={clsx("flex-1 p-4 rounded-xl border flex flex-col items-center justify-center", color)}>
             <span className="text-2xl font-bold">{percent}%</span>
             <span className="text-xs font-medium uppercase tracking-wider opacity-80">{label}</span>
+        </div>
+    );
+}
+
+function SegmentAnalysis({ reactions, people }: { reactions: Reaction[]; people: Person[] }) {
+    const [view, setView] = useState<'politics' | 'hometownType' | 'ageGroup'>('politics');
+    const data = calculateBreakdown(reactions, people, view);
+
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="font-semibold text-slate-900">Segment Analysis</h3>
+                <div className="flex bg-slate-100 p-1 rounded-lg">
+                    {[
+                        { id: 'politics', label: 'Politics' },
+                        { id: 'hometownType', label: 'Location' },
+                        { id: 'ageGroup', label: 'Age' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setView(tab.id as any)}
+                            className={clsx(
+                                "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                                view === tab.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                            )}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-4">
+                {data.map((item) => (
+                    <div key={item.label} className="space-y-1">
+                        <div className="flex justify-between text-xs">
+                            <span className="font-medium text-slate-700">{item.label} <span className="text-slate-400 font-normal">({item.total})</span></span>
+                            <div className="flex gap-3">
+                                <span className="text-emerald-600 font-medium">{item.positivePercent}% Pos</span>
+                                <span className="text-red-600 font-medium">{item.negativePercent}% Neg</span>
+                            </div>
+                        </div>
+                        <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden flex">
+                            {/* Positive Segment */}
+                            <div className="h-full bg-emerald-500" style={{ width: `${item.positivePercent}%` }} />
+                            {/* Neutral/Mixed (Gray) */}
+                            <div className="h-full bg-slate-300" style={{ width: `${100 - item.positivePercent - item.negativePercent}%` }} />
+                            {/* Negative Segment */}
+                            <div className="h-full bg-red-500" style={{ width: `${item.negativePercent}%` }} />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
