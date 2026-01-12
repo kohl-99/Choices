@@ -96,7 +96,9 @@ export function SimulationDashboard({ people }: Props) {
                     {/* In-depth Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {reactions.map((r) => {
-                            const person = people.find(p => p.id === r.personId)!;
+                            const person = people.find(p => p.id === r.personId);
+                            if (!person) return null;
+
                             return (
                                 <div key={r.personId} className="relative group">
                                     <PersonCard person={person} />
