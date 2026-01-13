@@ -10,6 +10,8 @@ export type Race =
     | 'Mixed'
     | 'Other';
 
+export type Region = 'US' | 'SEA' | 'EU';
+
 export type EducationLevel =
     | 'Less than High School'
     | 'High School Diploma'
@@ -74,6 +76,14 @@ export interface Person {
     politics: PoliticalAffiliation;
     personality: BigFiveTraits;
     biases: CognitiveBiases;
+    // Richer fields for specific scenarios
+    background?: string;
+    goals?: string;
+    specificBarriers?: {
+        priceSensitivity: string;
+        loyalty: string;
+        skepticism: string;
+    };
 }
 
 export type ReactionSentiment = 'Positive' | 'Negative' | 'Neutral' | 'Mixed';
@@ -85,4 +95,29 @@ export interface Reaction {
     interestLevel: number; // 0-10
     comment: string;
     timestamp: Date;
+}
+
+export type ScenarioType = 'GENERAL' | 'PRODUCT_LAUNCH' | 'POLICY_CHANGE' | 'POLITICAL_BIAS';
+
+export interface DerivedTraits {
+    // Product
+    priceSensitivity: number; // 0-1 (High = cheapskate)
+    brandLoyalty: number;     // 0-1 (High = sticks to known brands)
+    innovationAdoption: number; // 0-1 (High = early adopter)
+
+    // Policy
+    trustInAuthority: number; // 0-1
+    civicDuty: number;        // 0-1
+    economicAnxiety: number;  // 0-1
+
+    // Political
+    partyLoyalty: number;     // 0-1
+    ideologicalRigidity: number; // 0-1
+}
+
+export interface ProductSpec {
+    name: string;
+    prop: string; // Value Proposition
+    price: string;
+    competitor: string;
 }

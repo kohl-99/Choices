@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Person } from '@/lib/types';
+import { Person, ScenarioType } from '@/lib/types';
 import { X, Send, User, Bot, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
 import { generateSystemPrompt } from '@/lib/chatUtils';
@@ -57,22 +57,40 @@ export function ChatModal({ person, isOpen, onClose }: ChatModalProps) {
         setIsLoading(true);
 
         try {
-            // Simulate network delay for now (Mock API)
-            // In the future, this calls /api/chat with generateSystemPrompt(person)
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
             const systemPrompt = generateSystemPrompt(person);
-            console.log('Using System Prompt:', systemPrompt); // Debugging
 
-            const mockResponse: Message = {
+            // Call API
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [...messages, userMsg],
+                    systemPrompt
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Include details if available
+                throw new Error(data.details || data.error || 'Failed to chat');
+            }
+
+            const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: `(Mock Response from ${person.name}) That's an interesting question about "${userMsg.content}". Given that I am ${person.politics} and high in ${person.personality.openness > 0.5 ? 'Openness' : 'Conscientiousness'}, I tend to think... [Real LLM integration coming soon]`
+                role: 'assistant', // 'model' from API, standardized to 'assistant' for UI
+                content: data.content
             };
 
-            setMessages(prev => [...prev, mockResponse]);
-        } catch (error) {
+            setMessages(prev => [...prev, aiMsg]);
+        } catch (error: unknown) {
             console.error('Chat error:', error);
+            // Show error in chat
+            setMessages(prev => [...prev, {
+                id: Date.now().toString(),
+                role: 'assistant',
+                content: `(System Error) Unable to connect to persona: ${error instanceof Error ? error.message : 'Unknown error'}. Please check your API key.`
+            }]);
         } finally {
             setIsLoading(false);
         }
